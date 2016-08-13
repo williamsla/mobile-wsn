@@ -16,22 +16,19 @@ public class Sensor extends Node implements Runnable {
 
 	}
 
-	@Override
-	public void receive() {
-		// TODO Auto-generated method stub
-	}
-
-	public void send() {
+	private void send() {
 
 	}
 
 	public void collect() {
+		long timeStamp = new Date().getTime();
+		int currentPosition = this.posX;
+
+		data += "[" + this.getId().toString() + ", " + timeStamp + "," + currentPosition + "]";
 
 	}
 
 	public void move() {
-		// int incrementX = (int) (Math.random() * 100) % 50;
-
 		this.posX += 20;
 
 		Simulation.getInstance().getEnvironment().contendGridPosition(this.posX, this.getPosition().getY(),

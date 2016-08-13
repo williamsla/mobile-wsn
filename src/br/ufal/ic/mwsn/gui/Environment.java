@@ -109,7 +109,7 @@ public class Environment extends JPanel implements Runnable {
 		this.alive = alive;
 	}
 
-	public void contendGridPosition(int nextX, int nextY, String sensorId) {
+	public synchronized void contendGridPosition(int nextX, int nextY, String sensorId) {
 
 		System.out.println("contending..." + nextY);
 

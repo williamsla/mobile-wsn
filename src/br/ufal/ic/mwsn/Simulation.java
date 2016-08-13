@@ -1,5 +1,7 @@
 package br.ufal.ic.mwsn;
 
+import java.util.ArrayList;
+
 import javax.swing.JFrame;
 
 import br.ufal.ic.mwsn.gui.Environment;
@@ -8,11 +10,13 @@ public class Simulation {
 	private long duration;
 	private long numberOfNodes;
 	private Environment environment;
+	private ArrayList<Sensor> sensors;
 
 	private static Simulation instance;
 
 	private Simulation() {
 		super();
+		sensors = new ArrayList<>();
 	}
 
 	public static Simulation getInstance() {
@@ -30,6 +34,7 @@ public class Simulation {
 	public void initNetwork() {
 		for (int i = 0; i < numberOfNodes; i++) {
 			Sensor s = new Sensor();
+			sensors.add(s);
 			new Thread(s).start();
 
 			try {
@@ -68,6 +73,8 @@ public class Simulation {
 	public Environment getEnvironment() {
 		return environment;
 	}
+	
+	
 
 	private void initGraphics() {
 		int width = 1600;

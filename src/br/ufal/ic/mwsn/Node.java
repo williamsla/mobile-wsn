@@ -3,11 +3,14 @@ package br.ufal.ic.mwsn;
 import java.util.Date;
 import java.util.UUID;
 
+import javax.sql.rowset.spi.SyncResolver;
+
 public abstract class Node {
 	private UUID id;
 	private Date currentTime;
 	private Battery battery;
 	private Position position;
+	private String data = "";
 
 	public Node() {
 		this.id = UUID.randomUUID();
@@ -35,5 +38,9 @@ public abstract class Node {
 		return battery;
 	}
 
-	public abstract void receive();
+	public void receive(DataFrame frame) {
+		synchronized (frame) {
+			data += frame.toString();
+		}
+	}
 }
