@@ -2,29 +2,29 @@ package br.ufal.ic.mwsn;
 
 public class Position {
 
-	private long latitude;
-	private long longitude;
+	private int x;
+	private int y;
 
-	public Position(long latitude, long longitude) {
+	public Position(int x, int y) {
 		super();
-		this.latitude = latitude;
-		this.longitude = longitude;
+		this.x = x;
+		this.y = y;
 	}
 
-	public long getLatitude() {
-		return latitude;
+	public int getX() {
+		return x;
 	}
 
-	public void setLatitude(long latitude) {
-		this.latitude = latitude;
+	public void setX(int x) {
+		this.x = x;
 	}
 
-	public long getLongitude() {
-		return longitude;
+	public int getY() {
+		return y;
 	}
 
-	public void setLongitude(long longitude) {
-		this.longitude = longitude;
+	public void setY(int y) {
+		this.y = y;
 	}
 
 }

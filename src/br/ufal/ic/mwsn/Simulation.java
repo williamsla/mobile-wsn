@@ -1,17 +1,44 @@
 package br.ufal.ic.mwsn;
 
+import javax.swing.JFrame;
+
+import br.ufal.ic.mwsn.gui.Environment;
+
 public class Simulation {
 	private long duration;
 	private long numberOfNodes;
+	private Environment environment;
 
-	public Simulation(long duration, long numberOfNodes) {
+	private static Simulation instance;
+
+	private Simulation() {
 		super();
-		this.duration = duration;
-		this.numberOfNodes = numberOfNodes;
+	}
+
+	public static Simulation getInstance() {
+		if (instance == null)
+			instance = new Simulation();
+
+		return instance;
+	}
+
+	private void start() {
+		initGraphics();
+		initNetwork();
 	}
 
 	public void initNetwork() {
+		for (int i = 0; i < numberOfNodes; i++) {
+			Sensor s = new Sensor();
+			new Thread(s).start();
 
+			try {
+				int r = (int) (Math.random() * 1000);
+				Thread.sleep(1000 + r);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public void stopNetwork() {
@@ -36,6 +63,35 @@ public class Simulation {
 
 	public void setNumberOfNodes(long numberOfNodes) {
 		this.numberOfNodes = numberOfNodes;
+	}
+
+	public Environment getEnvironment() {
+		return environment;
+	}
+
+	private void initGraphics() {
+		int width = 1600;
+		int height = 600;
+
+		environment = new Environment();
+
+		// creates a new frame
+		JFrame frame = new JFrame("Mobile WSN");
+		frame.setSize(width, height);
+
+		frame.setContentPane(environment);
+		frame.setResizable(false);
+		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		new Thread(environment).start();
+
+	}
+
+	public static void main(String[] args) {
+		Simulation simulation = Simulation.getInstance();
+		simulation.setNumberOfNodes(20);
+		simulation.start();
 	}
 
 }
