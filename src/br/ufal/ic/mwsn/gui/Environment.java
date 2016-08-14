@@ -111,8 +111,6 @@ public class Environment extends JPanel implements Runnable {
 
 	public synchronized void contendGridPosition(int nextX, int nextY, String sensorId) {
 
-		System.out.println("contending..." + nextY);
-
 		if (grid[nextX][nextY].equals("-1")) {
 			for (int i = 0; i < width; i++)
 				for (int j = 0; j < gridHeight; j++)
@@ -120,6 +118,18 @@ public class Environment extends JPanel implements Runnable {
 						grid[i][j] = "-1";
 			grid[nextX][nextY] = sensorId;
 		}
+	}
+
+	public String[][] getGrid() {
+		return grid;
+	}
+
+	public int getGridHeight() {
+		return gridHeight;
+	}
+
+	public void setGridHeight(int gridHeight) {
+		this.gridHeight = gridHeight;
 	}
 
 }

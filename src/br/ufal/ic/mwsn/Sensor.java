@@ -18,6 +18,20 @@ public class Sensor extends Node implements Runnable {
 
 	private void send() {
 
+		String grid[][] = Simulation.getInstance().getEnvironment().getGrid();
+		int height = Simulation.getInstance().getEnvironment().getGridHeight();
+
+		for (int i = this.posX; i < 50; i++) {
+			for (int j = 0; j < height; j++) {
+				if (!grid[i][j].equals("-1")) {
+					String sensorId = grid[i][j];
+
+					Sensor recipient = Simulation.getInstance().getSensors().get(sensorId);
+					recipient.receive(this.data);
+
+				}
+			}
+		}
 	}
 
 	public void collect() {
@@ -25,6 +39,7 @@ public class Sensor extends Node implements Runnable {
 		int currentPosition = this.posX;
 
 		data += "[" + this.getId().toString() + ", " + timeStamp + "," + currentPosition + "]";
+		// System.out.println(data);
 
 	}
 
@@ -49,6 +64,8 @@ public class Sensor extends Node implements Runnable {
 
 		while (this.posX < 1600) {
 			this.move();
+			this.collect();
+			this.send();
 
 			try {
 				Thread.sleep(500);

@@ -38,9 +38,9 @@ public abstract class Node {
 		return battery;
 	}
 
-	public void receive(DataFrame frame) {
-		synchronized (frame) {
-			data += frame.toString();
+	public void receive(String dataFrame) {
+		synchronized (dataFrame) {
+			data += dataFrame;
 		}
 	}
 }

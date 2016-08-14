@@ -1,6 +1,7 @@
 package br.ufal.ic.mwsn;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JFrame;
 
@@ -10,13 +11,13 @@ public class Simulation {
 	private long duration;
 	private long numberOfNodes;
 	private Environment environment;
-	private ArrayList<Sensor> sensors;
+	private Map<String, Sensor> sensors;
 
 	private static Simulation instance;
 
 	private Simulation() {
 		super();
-		sensors = new ArrayList<>();
+		sensors = new HashMap<>();
 	}
 
 	public static Simulation getInstance() {
@@ -34,7 +35,7 @@ public class Simulation {
 	public void initNetwork() {
 		for (int i = 0; i < numberOfNodes; i++) {
 			Sensor s = new Sensor();
-			sensors.add(s);
+			sensors.put(s.getId().toString(), s);
 			new Thread(s).start();
 
 			try {
@@ -44,10 +45,6 @@ public class Simulation {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	public void stopNetwork() {
-
 	}
 
 	public void generateStats() {
@@ -73,8 +70,10 @@ public class Simulation {
 	public Environment getEnvironment() {
 		return environment;
 	}
-	
-	
+
+	public Map<String, Sensor> getSensors() {
+		return sensors;
+	}
 
 	private void initGraphics() {
 		int width = 1600;
