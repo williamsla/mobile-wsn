@@ -64,7 +64,7 @@ public class Environment extends JPanel implements Runnable {
 		g2.drawLine(0, gridStartY + gridStartY / 4, width - 100, gridStartY + gridStartY / 4);
 
 		// draws sink
-		int xPos = width - 400;
+		int xPos = width - 70;
 		int yPos = gridStartY + gridStartY / 2 + 5;
 
 		int red = (int) (Math.random() * 10) % 2; // gets a random color
