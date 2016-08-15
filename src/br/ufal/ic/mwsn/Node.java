@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import javax.sql.rowset.spi.SyncResolver;
 
-public abstract class Node {
+public abstract class Node implements Runnable {
 	private UUID id;
 	private Date currentTime;
 	private Battery battery;
@@ -36,6 +36,10 @@ public abstract class Node {
 
 	public Battery getBattery() {
 		return battery;
+	}
+
+	public String getData() {
+		return data;
 	}
 
 	public void receive(String dataFrame) {

@@ -2,7 +2,7 @@ package br.ufal.ic.mwsn;
 
 import java.util.Date;
 
-public class Sensor extends Node implements Runnable {
+public class Sensor extends Node {
 
 	private String data;
 	private int posX = 0;
@@ -24,9 +24,9 @@ public class Sensor extends Node implements Runnable {
 		for (int i = this.posX; i < 50; i++) {
 			for (int j = 0; j < height; j++) {
 				if (!grid[i][j].equals("-1")) {
-					String sensorId = grid[i][j];
+					String nodeId = grid[i][j];
 
-					Sensor recipient = Simulation.getInstance().getSensors().get(sensorId);
+					Node recipient = Simulation.getInstance().getNodes().get(nodeId);
 					recipient.receive(this.data);
 
 				}
@@ -49,10 +49,6 @@ public class Sensor extends Node implements Runnable {
 		Simulation.getInstance().getEnvironment().contendGridPosition(this.posX, this.getPosition().getY(),
 				this.getId().toString());
 
-	}
-
-	public String getData() {
-		return data;
 	}
 
 	public void setData(String data) {

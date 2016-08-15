@@ -11,13 +11,13 @@ public class Simulation {
 	private long duration;
 	private long numberOfNodes;
 	private Environment environment;
-	private Map<String, Sensor> sensors;
+	private Map<String, Node> nodes;
 
 	private static Simulation instance;
 
 	private Simulation() {
 		super();
-		sensors = new HashMap<>();
+		nodes = new HashMap<>();
 	}
 
 	public static Simulation getInstance() {
@@ -33,9 +33,17 @@ public class Simulation {
 	}
 
 	public void initNetwork() {
+
+		// place sink
+		Sink sink = new Sink();
+		sink.setPosition(new Position(1500, 50));
+		nodes.put(sink.getId().toString(), sink);
+		new Thread(sink).start();
+
+		// place sensors
 		for (int i = 0; i < numberOfNodes; i++) {
 			Sensor s = new Sensor();
-			sensors.put(s.getId().toString(), s);
+			nodes.put(s.getId().toString(), s);
 			new Thread(s).start();
 
 			try {
@@ -45,6 +53,7 @@ public class Simulation {
 				e.printStackTrace();
 			}
 		}
+
 	}
 
 	public void generateStats() {
@@ -71,8 +80,8 @@ public class Simulation {
 		return environment;
 	}
 
-	public Map<String, Sensor> getSensors() {
-		return sensors;
+	public Map<String, Node> getNodes() {
+		return nodes;
 	}
 
 	private void initGraphics() {
