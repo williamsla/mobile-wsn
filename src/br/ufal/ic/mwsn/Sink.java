@@ -50,7 +50,10 @@ public class Sink extends Node {
 		this.placeSink();
 
 		while (true) {
-			// showData();
+			//showData();
+			if (!this.getData().equals("")) {
+				System.out.println("Sink is receiving data...");
+			}
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {

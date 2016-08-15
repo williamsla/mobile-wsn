@@ -40,7 +40,6 @@ public class Sensor extends Node {
 		int currentPosition = this.posX;
 
 		data += this.getId().toString() + ", " + timeStamp + "," + currentPosition + ";";
-		// System.out.println(data);
 
 	}
 
@@ -65,7 +64,7 @@ public class Sensor extends Node {
 			this.send();
 
 			try {
-				Thread.sleep(100);
+				Thread.sleep(500);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

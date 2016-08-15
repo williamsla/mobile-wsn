@@ -32,16 +32,15 @@ public class Simulation {
 		initGraphics();
 		initNetwork();
 
-		System.out.println("Simulation is gonna sleep...");
 		try {
 			Thread.sleep(20000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		System.out.println("Simulation just woke up!");
 
-		System.out.println("Calculating speed...");
 		this.generateStats();
+
+		System.exit(0);
 
 	}
 
@@ -50,12 +49,14 @@ public class Simulation {
 		// place sink
 		sink = new Sink();
 		sink.setPosition(new Position(1500, 50));
+		System.out.println("Sink Created: " + sink.getId().toString());
 		nodes.put(sink.getId().toString(), sink);
 		new Thread(sink).start();
 
 		// place sensors
 		for (int i = 0; i < numberOfNodes; i++) {
 			Sensor s = new Sensor();
+			System.out.println("Sensor Created: " + s.getId().toString());
 			nodes.put(s.getId().toString(), s);
 			new Thread(s).start();
 
@@ -73,13 +74,11 @@ public class Simulation {
 		// System.out.println("speed: " +
 		// Statistics.getInstance().getSpeed(sink.getProcessedData()));
 		//
-		// System.out.println("writing data: ");
-		// for (String str : sink.getProcessedData()) {
-		// System.out.println(str);
-		//
-		// }
 
-		System.out.println("velocidade: " + Statistics.getInstance().getSpeed(sink.getProcessedData()));
+		for (String str : sink.getProcessedData()) {
+			System.out.println("Data Received: " + str);
+		}
+
 	}
 
 	public long getDuration() {

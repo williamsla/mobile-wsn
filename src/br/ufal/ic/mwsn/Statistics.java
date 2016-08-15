@@ -107,15 +107,4 @@ public class Statistics {
 		return statiscsDataMap;
 	}
 
-//	public Map<String, Map<Integer, Float>> calculateSpeed(String dataArray[]) {
-//		Map<String, Map<Integer, Float>> speeds = new HashMap<>();
-//
-//		for (String string : dataArray) {
-//			String data[] = string.split(",");
-//
-//		}
-//
-//		return speeds;
-//	}
-
 }
