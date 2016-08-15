@@ -21,14 +21,15 @@ public class Sensor extends Node {
 		String grid[][] = Simulation.getInstance().getEnvironment().getGrid();
 		int height = Simulation.getInstance().getEnvironment().getGridHeight();
 
-		for (int i = this.posX; i < 50; i++) {
-			for (int j = 0; j < height; j++) {
-				if (!grid[i][j].equals("-1")) {
-					String nodeId = grid[i][j];
+		if (this.posX < 1550) {
+			for (int i = this.posX; i < this.posX + 50; i++) {
+				for (int j = 0; j < height; j++) {
+					if (!grid[i][j].equals("-1")) {
+						String nodeId = grid[i][j];
 
-					Node recipient = Simulation.getInstance().getNodes().get(nodeId);
-					recipient.receive(this.data);
-
+						Node recipient = Simulation.getInstance().getNodes().get(nodeId);
+						recipient.receive(this.data);
+					}
 				}
 			}
 		}
@@ -44,7 +45,7 @@ public class Sensor extends Node {
 	}
 
 	public void move() {
-		this.posX += 20;
+		this.posX += 50;
 
 		Simulation.getInstance().getEnvironment().contendGridPosition(this.posX, this.getPosition().getY(),
 				this.getId().toString());
