@@ -27,7 +27,7 @@ public class Sink extends Node {
 		// System.out.println("Sink data: " + dataArray.toString());
 		return dataArray;
 	}
-	public String getMD5Hash(String str) throws NoSuchAlgorithmException{
+	private String getMD5Hash(String str) throws NoSuchAlgorithmException{
 		
 		MessageDigest md = MessageDigest.getInstance("MD5");
         md.update(str.getBytes());
@@ -40,7 +40,7 @@ public class Sink extends Node {
          sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
         }
 
-        System.out.println("Digest(in hex format):: " + sb.toString());
+        //System.out.println("Digest(in hex format):: " + sb.toString());
 
         //convert the byte to hex format method 2
         StringBuffer hexString = new StringBuffer();
@@ -59,13 +59,13 @@ public class Sink extends Node {
 		
 		for (String string : dataArray) {
 			String key = getMD5Hash(string);
-			if(statiscsMap.containsKey(string)){
-				statiscsMap.get(string).incrementSaltos();
+			if(statiscsMap.containsKey(key)){
+				statiscsMap.get(key).incrementSaltos();
 			}
 			else{
 				Statistics statistics = new Statistics();
 				statistics.incrementSaltos();
-				statiscsMap.put(string, statistics);
+				statiscsMap.put(key, statistics);
 			}
 			
 		}				
