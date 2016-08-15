@@ -51,13 +51,17 @@ public class Environment extends JPanel implements Runnable {
 		// draws road/lane
 		g2.fillRect(0, gridStartY, width, gridHeight);
 
+		// draws blue mark
+		g2.setColor(Color.blue);
+		g2.fillRect(1500, gridStartY, 100, gridHeight);
+
 		// creates a dashed line
 		Stroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] { 30 }, 0);
 		g2.setStroke(dashed);
 		g2.setColor(Color.white);
 
 		// adds the dashed line to the middle of the lane
-		g2.drawLine(0, gridStartY + gridStartY / 4, width, gridStartY + gridStartY / 4);
+		g2.drawLine(0, gridStartY + gridStartY / 4, width - 100, gridStartY + gridStartY / 4);
 
 		// draws sink
 		int xPos = width - 400;
@@ -111,12 +115,14 @@ public class Environment extends JPanel implements Runnable {
 
 	public synchronized void contendGridPosition(int nextX, int nextY, String sensorId) {
 
-		if (grid[nextX][nextY].equals("-1")) {
-			for (int i = 0; i < width; i++)
-				for (int j = 0; j < gridHeight; j++)
-					if (grid[i][j].equals(sensorId))
-						grid[i][j] = "-1";
-			grid[nextX][nextY] = sensorId;
+		if (nextX < 1600) {
+			if (grid[nextX][nextY].equals("-1")) {
+				for (int i = 0; i < width; i++)
+					for (int j = 0; j < gridHeight; j++)
+						if (grid[i][j].equals(sensorId))
+							grid[i][j] = "-1";
+				grid[nextX][nextY] = sensorId;
+			}
 		}
 	}
 
