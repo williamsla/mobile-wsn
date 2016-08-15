@@ -38,7 +38,7 @@ public class Sensor extends Node {
 		long timeStamp = new Date().getTime();
 		int currentPosition = this.posX;
 
-		data += "[" + this.getId().toString() + ", " + timeStamp + "," + currentPosition + "]";
+		data += this.getId().toString() + ", " + timeStamp + "," + currentPosition + ";";
 		// System.out.println(data);
 
 	}
