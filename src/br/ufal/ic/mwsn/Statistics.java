@@ -7,6 +7,10 @@ import java.util.Map;
 
 public class Statistics {
 	private long saltos;
+	private int posX;
+	private int temp;
+	private float speed;
+	
 
 	public long getSaltos() {
 		return saltos;
@@ -41,22 +45,56 @@ public class Statistics {
     		
 		
 	}
-	
+	public float getSpeed(String dataArray[]){
+		Map<String, Statistics> statiscsSpeedMap = new HashMap<>();
+		for (String string : dataArray) {
+			String data[] = string.split(",");
+			if(statiscsSpeedMap.containsKey(data[0])){
+				int tempo = Integer.parseInt(data[1]);
+				int posx = Integer.parseInt(data[0]);
+				Statistics aux = statiscsSpeedMap.get(data[0]);
+				if(posx>(aux.posX-25) && posx<(aux.posX+25)){
+					aux.temp = (aux.temp+tempo)/2;
+					statiscsSpeedMap.put(data[0], aux);
+				}
+				
+			}
+			else{
+				int tempo = Integer.parseInt(data[1]);
+				int posx = Integer.parseInt(data[0]);
+				Statistics aux = new Statistics();
+				if(posx>(aux.posX-25) && posx<(aux.posX+25)){
+					aux.temp = (aux.temp+tempo)/2;
+					statiscsSpeedMap.put(data[0], aux);
+				}				
+			}
+			
+		}
+		for (Map.Entry<String, Statistics> entry : statiscsSpeedMap.entrySet()) {
+			this.speed = entry.getValue().speed/statiscsSpeedMap.size();
+		}
+		return this.speed;
+	}
 	public Map<String, Statistics> getStaticsperData(String dataArray[]) throws NoSuchAlgorithmException{
-		Map<String, Statistics> statiscsMap = new HashMap<>();
+		Map<String, Statistics> statiscsDataMap = new HashMap<>();
 		
 		for (String string : dataArray) {
 			String key = getMD5Hash(string);
-			if(statiscsMap.containsKey(key)){
-				statiscsMap.get(key).incrementSaltos();
+			if(statiscsDataMap.containsKey(key)){
+				statiscsDataMap.get(key).incrementSaltos();
 			}
 			else{
 				Statistics statistics = new Statistics();
 				statistics.incrementSaltos();
-				statiscsMap.put(key, statistics);
+				statiscsDataMap.put(key, statistics);
 			}
 			
 		}				
-		return statiscsMap;
+		return statiscsDataMap;
 	}
+	
+	
+	
 }
+
+
