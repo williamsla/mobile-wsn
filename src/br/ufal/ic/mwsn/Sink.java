@@ -15,7 +15,7 @@ public class Sink extends Node {
 		}
 	}
 
-	public String[] formatData() {
+	private String[] formatData() {
 
 		String dataArray[] = this.getData().split(";");
 
@@ -29,7 +29,7 @@ public class Sink extends Node {
 		return dataArray;
 	}
 
-	public String[] eliminateDuplicate(String dataArray[]) {
+	private String[] eliminateDuplicate(String dataArray[]) {
 		for (int i = 0; i < dataArray.length; i++) {
 			for (int j = 0; j < dataArray.length; j++) {
 
@@ -50,7 +50,7 @@ public class Sink extends Node {
 		this.placeSink();
 
 		while (true) {
-			showData();
+			// showData();
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {

@@ -12,6 +12,7 @@ public class Simulation {
 	private long numberOfNodes;
 	private Environment environment;
 	private Map<String, Node> nodes;
+	private Sink sink;
 
 	private static Simulation instance;
 
@@ -30,12 +31,24 @@ public class Simulation {
 	private void start() {
 		initGraphics();
 		initNetwork();
+
+		System.out.println("Simulation is gonna sleep...");
+		try {
+			Thread.sleep(20000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		System.out.println("Simulation just woke up!");
+
+		System.out.println("Calculating speed...");
+		this.generateStats();
+
 	}
 
 	public void initNetwork() {
 
 		// place sink
-		Sink sink = new Sink();
+		sink = new Sink();
 		sink.setPosition(new Position(1500, 50));
 		nodes.put(sink.getId().toString(), sink);
 		new Thread(sink).start();
@@ -57,7 +70,16 @@ public class Simulation {
 	}
 
 	public void generateStats() {
+		// System.out.println("speed: " +
+		// Statistics.getInstance().getSpeed(sink.getProcessedData()));
+		//
+		// System.out.println("writing data: ");
+		// for (String str : sink.getProcessedData()) {
+		// System.out.println(str);
+		//
+		// }
 
+		System.out.println("velocidade: " + Statistics.getInstance().getSpeed(sink.getProcessedData()));
 	}
 
 	public long getDuration() {
