@@ -45,7 +45,7 @@ public class Sensor extends Node {
 	}
 
 	public void move() {
-		this.posX += 50;
+		this.posX += (int) (Math.random() * 20) + 30;
 
 		Simulation.getInstance().getEnvironment().contendGridPosition(this.posX, this.getPosition().getY(),
 				this.getId().toString());

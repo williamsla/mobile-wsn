@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
-
-
 public class Sink extends Node {
 
 	public void showData() {
@@ -17,7 +14,7 @@ public class Sink extends Node {
 			System.out.println(i + ":" + dataArray[i].toString());
 		}
 	}
-	
+
 	public String[] formatData() {
 
 		String dataArray[] = this.getData().split(";");
@@ -25,12 +22,12 @@ public class Sink extends Node {
 		// System.out.println("Sink data: " + dataArray.toString());
 		return dataArray;
 	}
-	public String[] getProcessedData(){
+
+	public String[] getProcessedData() {
 		String dataArray[] = formatData();
 		dataArray = eliminateDuplicate(dataArray);
 		return dataArray;
 	}
-
 
 	public String[] eliminateDuplicate(String dataArray[]) {
 		for (int i = 0; i < dataArray.length; i++) {
