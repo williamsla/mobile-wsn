@@ -10,21 +10,28 @@ public class Simulation {
     private long duration;
     private long numberOfNodes;
     private Environment environment;
-    private Map<String, Node> nodes;
+    private static Map<String, Node> nodes;
     private Sink sink;
 
-    private Map<String, Temperature> map_temp;
+    private Map<String, Position> map_temp;
 
     private static Simulation instance;
 
-    public Simulation(Map<String, Temperature> temperatures) {
+    public int hour;
+
+    public Simulation() {
         nodes = new HashMap<>();
-        map_temp = temperatures;
+        map_temp = new HashMap<>();
+        map_temp.put("A", new Position(100, 100));
+        map_temp.put("B", new Position(100, 350));
+        map_temp.put("C", new Position(350, 100));
+        map_temp.put("D", new Position(350, 350));
+
     }
 
     public static Simulation getInstance() {
         if (instance == null) {
-            return null;
+            instance = new Simulation();
         }
 
         return instance;
@@ -39,9 +46,6 @@ public class Simulation {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        this.generateStats();
-
         System.exit(0);
 
     }
@@ -49,15 +53,40 @@ public class Simulation {
     public void initNetwork() {
 
         // place sink
-        sink = new Sink("Sink", 1500, 50);
-        System.out.println("Sink Created: " + sink.getId());
+        sink = new Sink("Sink", 500, 100, 24f);
         nodes.put(sink.getId(), sink);
+        System.out.println("Sink " + sink.getId() + " added on " + sink.getPosition().toString());
+
         new Thread(sink).start();
+        int hour_start = 0;
 
         // place sensors
-        map_temp.forEach((k, t) -> {
-            Sensor s = new Sensor(k, t.getPosition().getX(), t.getPosition().getY());
-            System.out.println("Sensor " + s.getId() + " added on " + t.getPosition().toString());
+        for (Map.Entry<String, Position> entry : map_temp.entrySet()) {
+            String k = entry.getKey();
+            Position pos = entry.getValue();
+            float rate;
+            switch (k) {
+                case "A":
+                    rate = 0.3f;
+                    break;
+                case "B":
+                    rate = 0.2f;
+                    break;
+                case "C":
+                    rate = 0f;
+                    break;
+                case "D":
+                    rate = 0.1f;
+                    break;
+                default:
+                    rate = 0f;
+            }
+
+            Sensor s = new Sensor(k, pos.getX(), pos.getY(), sink, rate);
+            System.out.println("Sensor " + s.getId() + " added on " + pos.toString());
+
+            s.setTimeStart(hour_start);
+            hour_start = hour_start + 1;
 
             nodes.put(s.getId(), s);
             new Thread(s).start();
@@ -68,28 +97,7 @@ public class Simulation {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        });
-        /*for (int i = 0; i < numberOfNodes; i++) {
-
-            int x = (int) (Math.random() * 100) / 10;
-            int y = (int) new Date().getTime() % (30);
-            if (y < 0) {
-                y = y * -1;
-            }
-
-        }*/
-
-    }
-
-    public void generateStats() {
-        // System.out.println("speed: " +
-        // Statistics.getInstance().getSpeed(sink.getProcessedData()));
-        //
-
-        for (String str : sink.getProcessedData()) {
-            System.out.println("Data Received: " + str);
         }
-
     }
 
     public long getDuration() {
@@ -112,10 +120,6 @@ public class Simulation {
         return environment;
     }
 
-    public Map<String, Node> getNodes() {
-        return nodes;
-    }
-
     private void initGraphics() {
         int width = 1600;
         int height = 600;
@@ -136,13 +140,8 @@ public class Simulation {
     }
 
     public static void main(String[] args) {
-        Map<String, Temperature> map_temp = new HashMap<>();
-        map_temp.put("A", new Temperature(24f, 10, 10));
-        map_temp.put("B", new Temperature(22f, 80, 10));
-        map_temp.put("C", new Temperature(28f, 10, 20));
-        map_temp.put("D", new Temperature(25f, 20, 10));
 
-        Simulation simulation = new Simulation(map_temp);
+        Simulation simulation = new Simulation();
         simulation.start();
     }
 

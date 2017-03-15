@@ -1,84 +1,85 @@
 package br.ufal.ic.mwsn;
 
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Sensor extends Node {
-
-    private float temperature;
+    
     private String data;
-    private int posX = 0;
-
-    public Sensor(String id, int x, int y) {
+    //private int posX = 0;
+    private Sink sink_node;
+    
+    private Map<Integer, Float> temperatures;
+    int time = 0;
+    float rate;
+    
+    public Sensor(String id, int x, int y, Sink sink_node, float rate) {
         super(id, x, y);
+        this.sink_node = sink_node;
+        this.rate = rate;
+        temperatures = new HashMap<>();
+        setTemperature();
     }
-
-    public float getTemperature() {
-        return temperature;
+    
+    public float getTemperature(int hour) {
+        return temperatures.get(hour);
     }
-
-    public void setTemperature(float temp) {
-        temperature = temp;
+    
+    public void setTimeStart(int hour_start) {
+        this.time = hour_start;
     }
-
-    private void send() {
-
-        String grid[][] = Simulation.getInstance().getEnvironment().getGrid();
-        int height = Simulation.getInstance().getEnvironment().getGridHeight();
-
-        if (this.posX < 1550) {
-            for (int i = this.posX; i < this.posX + 50; i++) {
-                for (int j = 0; j < height; j++) {
-                    if (!grid[i][j].equals("-1")) {
-                        String nodeId = grid[i][j];
-
-                        Node recipient = Simulation.getInstance().getNodes().get(nodeId);
-                        recipient.receive(this.data);
-                    }
-                }
+    
+    public void setTemperature() {
+        for (int h = 0; h < 24; h++) {
+            float grau;
+            if (h >= 22 || h <= 6) {
+                grau = 0;
+            } else if (h <= 10) {
+                grau = 1;
+            } else if (h <= 14) {
+                grau = 3;
+            } else {
+                grau = 2;
             }
+            temperatures.put(h, grau + sink_node.getTemperature() + rate);
         }
     }
-
-    public void collect() {
-        long timeStamp = new Date().getTime();
-        int currentPosition = this.posX;
-
-        data += this.getId() + ", " + timeStamp + "," + currentPosition + ";";
-
+    
+    private void send() {
+        this.decrementBattery(1);
+        sink_node.receive(this.data);        
     }
-
-    public void move() {
-        this.posX += (int) (Math.random() * 20) + 30;
-
-        Simulation.getInstance().getEnvironment().contendGridPosition(this.posX, this.getPosition().getY(),
-                this.getId());
-
+    
+    public void collect(int hour) {
+        data = this.getId() + " | " + hour + " | " + getTemperature(hour) + ";\n";
+        
     }
-
+    
     public void setData(String data) {
         this.data = data;
     }
-
+    
     @Override
     public void run() {
-
-        while (this.posX < 1600) {
-            //this.move();
-            this.collect();
+        
+        while (time < 24) {
+            this.collect(time);
             this.send();
-
             try {
-                Thread.sleep(5000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            ++time;
         }
-
+        
         try {
             this.finalize();
         } catch (Throwable e) {
             e.printStackTrace();
         }
+        
+        System.out.println("BATTERY: " + this.getBattery());
     }
-
+    
 }

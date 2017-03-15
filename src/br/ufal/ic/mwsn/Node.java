@@ -41,6 +41,7 @@ public abstract class Node implements Runnable {
         synchronized (dataFrame) {
             data += dataFrame;
         }
+        System.out.println(dataFrame);
     }
 
     public int getBattery() {
