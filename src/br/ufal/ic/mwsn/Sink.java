@@ -6,8 +6,8 @@ import java.util.List;
 
 public class Sink extends Node {
 
-    public Sink(int x, int y) {
-        super(x, y);
+    public Sink(String id, int x, int y) {
+        super(id, x, y);
     }
 
     public void showData() {
@@ -70,7 +70,7 @@ public class Sink extends Node {
     private void placeSink() {
         int sinkX = this.getPosition().getX();
         int sinkY = this.getPosition().getY();
-        String sinkId = this.getId().toString();
+        String sinkId = this.getId();
 
         Simulation.getInstance().getEnvironment().contendGridPosition(sinkX, sinkY, sinkId);
     }

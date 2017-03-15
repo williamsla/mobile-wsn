@@ -1,20 +1,20 @@
 package br.ufal.ic.mwsn;
 
 import java.util.Date;
-import java.util.UUID;
 
 public abstract class Node implements Runnable {
 
-    private UUID id;
+    private String id;
     private Date currentTime;
     private Position position;
-    private float temperature;
     private String data = "";
+    private int battery;
 
-    public Node(int x, int y) {
-        this.id = UUID.randomUUID();
+    public Node(String id, int x, int y) {
+        this.id = id;
         this.currentTime = new Date();
-        position = new Position(x, y);
+        this.position = new Position(x, y);
+        this.battery = 100;
     }
 
     public Position getPosition() {
@@ -25,7 +25,7 @@ public abstract class Node implements Runnable {
         this.position = position;
     }
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
@@ -43,11 +43,11 @@ public abstract class Node implements Runnable {
         }
     }
 
-    public float getTemperature() {
-        return temperature;
+    public int getBattery() {
+        return battery;
     }
 
-    public void setTemperature(float temp) {
-        temperature = temp;
+    public void decrementBattery(int value) {
+        battery -= value;
     }
 }

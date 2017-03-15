@@ -2,11 +2,8 @@ package br.ufal.ic.mwsn;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.swing.JFrame;
-
 import br.ufal.ic.mwsn.gui.Environment;
-import java.util.Date;
 
 public class Simulation {
 
@@ -16,16 +13,18 @@ public class Simulation {
     private Map<String, Node> nodes;
     private Sink sink;
 
+    private Map<String, Temperature> map_temp;
+
     private static Simulation instance;
 
-    private Simulation() {
-        super();
+    public Simulation(Map<String, Temperature> temperatures) {
         nodes = new HashMap<>();
+        map_temp = temperatures;
     }
 
     public static Simulation getInstance() {
         if (instance == null) {
-            instance = new Simulation();
+            return null;
         }
 
         return instance;
@@ -50,19 +49,17 @@ public class Simulation {
     public void initNetwork() {
 
         // place sink
-        sink = new Sink(1500, 50);
-        System.out.println("Sink Created: " + sink.getId().toString());
-        nodes.put(sink.getId().toString(), sink);
+        sink = new Sink("Sink", 1500, 50);
+        System.out.println("Sink Created: " + sink.getId());
+        nodes.put(sink.getId(), sink);
         new Thread(sink).start();
 
         // place sensors
-        for (int i = 0; i < numberOfNodes; i++) {
+        map_temp.forEach((k, t) -> {
+            Sensor s = new Sensor(k, t.getPosition().getX(), t.getPosition().getY());
+            System.out.println("Sensor " + s.getId() + " added on " + t.getPosition().toString());
 
-            int x = (int) (Math.random() * 100) / 10;
-            int y = (int) new Date().getTime() % (30);
-            Sensor s = new Sensor(x, y);
-            System.out.println("Sensor Created: " + s.getId().toString());
-            nodes.put(s.getId().toString(), s);
+            nodes.put(s.getId(), s);
             new Thread(s).start();
 
             try {
@@ -71,7 +68,16 @@ public class Simulation {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
+        });
+        /*for (int i = 0; i < numberOfNodes; i++) {
+
+            int x = (int) (Math.random() * 100) / 10;
+            int y = (int) new Date().getTime() % (30);
+            if (y < 0) {
+                y = y * -1;
+            }
+
+        }*/
 
     }
 
@@ -117,7 +123,7 @@ public class Simulation {
         environment = new Environment();
 
         // creates a new frame
-        JFrame frame = new JFrame("Mobile WSN");
+        JFrame frame = new JFrame("WSN");
         frame.setSize(width, height);
 
         frame.setContentPane(environment);
@@ -130,8 +136,13 @@ public class Simulation {
     }
 
     public static void main(String[] args) {
-        Simulation simulation = Simulation.getInstance();
-        simulation.setNumberOfNodes(20);
+        Map<String, Temperature> map_temp = new HashMap<>();
+        map_temp.put("A", new Temperature(24f, 10, 10));
+        map_temp.put("B", new Temperature(22f, 80, 10));
+        map_temp.put("C", new Temperature(28f, 10, 20));
+        map_temp.put("D", new Temperature(25f, 20, 10));
+
+        Simulation simulation = new Simulation(map_temp);
         simulation.start();
     }
 

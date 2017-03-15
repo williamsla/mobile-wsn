@@ -4,11 +4,20 @@ import java.util.Date;
 
 public class Sensor extends Node {
 
+    private float temperature;
     private String data;
     private int posX = 0;
 
-    public Sensor(int x, int y) {
-        super(x,y);
+    public Sensor(String id, int x, int y) {
+        super(id, x, y);
+    }
+
+    public float getTemperature() {
+        return temperature;
+    }
+
+    public void setTemperature(float temp) {
+        temperature = temp;
     }
 
     private void send() {
@@ -34,7 +43,7 @@ public class Sensor extends Node {
         long timeStamp = new Date().getTime();
         int currentPosition = this.posX;
 
-        data += this.getId().toString() + ", " + timeStamp + "," + currentPosition + ";";
+        data += this.getId() + ", " + timeStamp + "," + currentPosition + ";";
 
     }
 
@@ -42,7 +51,7 @@ public class Sensor extends Node {
         this.posX += (int) (Math.random() * 20) + 30;
 
         Simulation.getInstance().getEnvironment().contendGridPosition(this.posX, this.getPosition().getY(),
-                this.getId().toString());
+                this.getId());
 
     }
 
