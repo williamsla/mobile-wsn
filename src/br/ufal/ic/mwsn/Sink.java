@@ -6,69 +6,73 @@ import java.util.List;
 
 public class Sink extends Node {
 
-	public void showData() {
-		String dataArray[] = formatData();
-		dataArray = eliminateDuplicate(dataArray);
+    public Sink(int x, int y) {
+        super(x, y);
+    }
 
-		for (int i = 0; i < dataArray.length; i++) {
-			System.out.println(i + ":" + dataArray[i].toString());
-		}
-	}
+    public void showData() {
+        String dataArray[] = formatData();
+        dataArray = eliminateDuplicate(dataArray);
 
-	private String[] formatData() {
+        for (int i = 0; i < dataArray.length; i++) {
+            System.out.println(i + ":" + dataArray[i].toString());
+        }
+    }
 
-		String dataArray[] = this.getData().split(";");
+    private String[] formatData() {
 
-		// System.out.println("Sink data: " + dataArray.toString());
-		return dataArray;
-	}
+        String dataArray[] = this.getData().split(";");
 
-	public String[] getProcessedData() {
-		String dataArray[] = formatData();
-		dataArray = eliminateDuplicate(dataArray);
-		return dataArray;
-	}
+        // System.out.println("Sink data: " + dataArray.toString());
+        return dataArray;
+    }
 
-	private String[] eliminateDuplicate(String dataArray[]) {
-		for (int i = 0; i < dataArray.length; i++) {
-			for (int j = 0; j < dataArray.length; j++) {
+    public String[] getProcessedData() {
+        String dataArray[] = formatData();
+        dataArray = eliminateDuplicate(dataArray);
+        return dataArray;
+    }
 
-				if (dataArray[i].toString().equals(dataArray[j].toString()) && j > i) {
+    private String[] eliminateDuplicate(String dataArray[]) {
+        for (int i = 0; i < dataArray.length; i++) {
+            for (int j = 0; j < dataArray.length; j++) {
 
-					List<String> list = new ArrayList<String>(Arrays.asList(dataArray));
-					list.remove(j);
-					dataArray = list.toArray(new String[0]);
-				}
-			}
-		}
+                if (dataArray[i].toString().equals(dataArray[j].toString()) && j > i) {
 
-		return dataArray;
-	}
+                    List<String> list = new ArrayList<String>(Arrays.asList(dataArray));
+                    list.remove(j);
+                    dataArray = list.toArray(new String[0]);
+                }
+            }
+        }
 
-	@Override
-	public void run() {
-		this.placeSink();
+        return dataArray;
+    }
 
-		while (true) {
-			//showData();
-			if (!this.getData().equals("")) {
-				System.out.println("Sink is receiving data...");
-			}
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+    @Override
+    public void run() {
+        this.placeSink();
 
-	}
+        while (true) {
+            //showData();
+            if (!this.getData().equals("")) {
+                System.out.println("Sink is receiving data...");
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
-	private void placeSink() {
-		int sinkX = this.getPosition().getX();
-		int sinkY = this.getPosition().getY();
-		String sinkId = this.getId().toString();
+    }
 
-		Simulation.getInstance().getEnvironment().contendGridPosition(sinkX, sinkY, sinkId);
-	}
+    private void placeSink() {
+        int sinkX = this.getPosition().getX();
+        int sinkY = this.getPosition().getY();
+        String sinkId = this.getId().toString();
+
+        Simulation.getInstance().getEnvironment().contendGridPosition(sinkX, sinkY, sinkId);
+    }
 
 }

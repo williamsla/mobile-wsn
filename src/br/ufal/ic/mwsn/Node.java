@@ -4,39 +4,50 @@ import java.util.Date;
 import java.util.UUID;
 
 public abstract class Node implements Runnable {
-	private UUID id;
-	private Date currentTime;
-	private Position position;
-	private String data = "";
 
-	public Node() {
-		this.id = UUID.randomUUID();
-		this.currentTime = new Date();
-	}
+    private UUID id;
+    private Date currentTime;
+    private Position position;
+    private float temperature;
+    private String data = "";
 
-	public Position getPosition() {
-		return position;
-	}
+    public Node(int x, int y) {
+        this.id = UUID.randomUUID();
+        this.currentTime = new Date();
+        position = new Position(x, y);
+    }
 
-	public void setPosition(Position position) {
-		this.position = position;
-	}
+    public Position getPosition() {
+        return position;
+    }
 
-	public UUID getId() {
-		return id;
-	}
+    public void setPosition(Position position) {
+        this.position = position;
+    }
 
-	public Date getCurrentTime() {
-		return currentTime;
-	}
+    public UUID getId() {
+        return id;
+    }
 
-	public String getData() {
-		return data;
-	}
+    public Date getCurrentTime() {
+        return currentTime;
+    }
 
-	public void receive(String dataFrame) {
-		synchronized (dataFrame) {
-			data += dataFrame;
-		}
-	}
+    public String getData() {
+        return data;
+    }
+
+    public void receive(String dataFrame) {
+        synchronized (dataFrame) {
+            data += dataFrame;
+        }
+    }
+
+    public float getTemperature() {
+        return temperature;
+    }
+
+    public void setTemperature(float temp) {
+        temperature = temp;
+    }
 }

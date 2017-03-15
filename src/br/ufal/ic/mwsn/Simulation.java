@@ -6,128 +6,133 @@ import java.util.Map;
 import javax.swing.JFrame;
 
 import br.ufal.ic.mwsn.gui.Environment;
+import java.util.Date;
 
 public class Simulation {
-	private long duration;
-	private long numberOfNodes;
-	private Environment environment;
-	private Map<String, Node> nodes;
-	private Sink sink;
 
-	private static Simulation instance;
+    private long duration;
+    private long numberOfNodes;
+    private Environment environment;
+    private Map<String, Node> nodes;
+    private Sink sink;
 
-	private Simulation() {
-		super();
-		nodes = new HashMap<>();
-	}
+    private static Simulation instance;
 
-	public static Simulation getInstance() {
-		if (instance == null)
-			instance = new Simulation();
+    private Simulation() {
+        super();
+        nodes = new HashMap<>();
+    }
 
-		return instance;
-	}
+    public static Simulation getInstance() {
+        if (instance == null) {
+            instance = new Simulation();
+        }
 
-	private void start() {
-		initGraphics();
-		initNetwork();
+        return instance;
+    }
 
-		try {
-			Thread.sleep(20000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+    private void start() {
+        initGraphics();
+        initNetwork();
 
-		this.generateStats();
+        try {
+            Thread.sleep(20000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-		System.exit(0);
+        this.generateStats();
 
-	}
+        System.exit(0);
 
-	public void initNetwork() {
+    }
 
-		// place sink
-		sink = new Sink();
-		sink.setPosition(new Position(1500, 50));
-		System.out.println("Sink Created: " + sink.getId().toString());
-		nodes.put(sink.getId().toString(), sink);
-		new Thread(sink).start();
+    public void initNetwork() {
 
-		// place sensors
-		for (int i = 0; i < numberOfNodes; i++) {
-			Sensor s = new Sensor();
-			System.out.println("Sensor Created: " + s.getId().toString());
-			nodes.put(s.getId().toString(), s);
-			new Thread(s).start();
+        // place sink
+        sink = new Sink(1500, 50);
+        System.out.println("Sink Created: " + sink.getId().toString());
+        nodes.put(sink.getId().toString(), sink);
+        new Thread(sink).start();
 
-			try {
-				int r = (int) (Math.random() * 1000);
-				Thread.sleep(1000 + r);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+        // place sensors
+        for (int i = 0; i < numberOfNodes; i++) {
 
-	}
+            int x = (int) (Math.random() * 100) / 10;
+            int y = (int) new Date().getTime() % (30);
+            Sensor s = new Sensor(x, y);
+            System.out.println("Sensor Created: " + s.getId().toString());
+            nodes.put(s.getId().toString(), s);
+            new Thread(s).start();
 
-	public void generateStats() {
-		// System.out.println("speed: " +
-		// Statistics.getInstance().getSpeed(sink.getProcessedData()));
-		//
+            try {
+                int r = (int) (Math.random() * 1000);
+                Thread.sleep(1000 + r);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
-		for (String str : sink.getProcessedData()) {
-			System.out.println("Data Received: " + str);
-		}
+    }
 
-	}
+    public void generateStats() {
+        // System.out.println("speed: " +
+        // Statistics.getInstance().getSpeed(sink.getProcessedData()));
+        //
 
-	public long getDuration() {
-		return duration;
-	}
+        for (String str : sink.getProcessedData()) {
+            System.out.println("Data Received: " + str);
+        }
 
-	public void setDuration(long duration) {
-		this.duration = duration;
-	}
+    }
 
-	public long getNumberOfNodes() {
-		return numberOfNodes;
-	}
+    public long getDuration() {
+        return duration;
+    }
 
-	public void setNumberOfNodes(long numberOfNodes) {
-		this.numberOfNodes = numberOfNodes;
-	}
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
 
-	public Environment getEnvironment() {
-		return environment;
-	}
+    public long getNumberOfNodes() {
+        return numberOfNodes;
+    }
 
-	public Map<String, Node> getNodes() {
-		return nodes;
-	}
+    public void setNumberOfNodes(long numberOfNodes) {
+        this.numberOfNodes = numberOfNodes;
+    }
 
-	private void initGraphics() {
-		int width = 1600;
-		int height = 600;
+    public Environment getEnvironment() {
+        return environment;
+    }
 
-		environment = new Environment();
+    public Map<String, Node> getNodes() {
+        return nodes;
+    }
 
-		// creates a new frame
-		JFrame frame = new JFrame("Mobile WSN");
-		frame.setSize(width, height);
+    private void initGraphics() {
+        int width = 1600;
+        int height = 600;
 
-		frame.setContentPane(environment);
-		frame.setResizable(false);
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        environment = new Environment();
 
-		new Thread(environment).start();
+        // creates a new frame
+        JFrame frame = new JFrame("Mobile WSN");
+        frame.setSize(width, height);
 
-	}
+        frame.setContentPane(environment);
+        frame.setResizable(false);
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-	public static void main(String[] args) {
-		Simulation simulation = Simulation.getInstance();
-		simulation.setNumberOfNodes(20);
-		simulation.start();
-	}
+        new Thread(environment).start();
+
+    }
+
+    public static void main(String[] args) {
+        Simulation simulation = Simulation.getInstance();
+        simulation.setNumberOfNodes(20);
+        simulation.start();
+    }
 
 }

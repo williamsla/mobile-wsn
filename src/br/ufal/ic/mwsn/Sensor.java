@@ -4,77 +4,72 @@ import java.util.Date;
 
 public class Sensor extends Node {
 
-	private String data;
-	private int posX = 0;
+    private String data;
+    private int posX = 0;
 
-	public Sensor() {
-		super();
+    public Sensor(int x, int y) {
+        super(x,y);
+    }
 
-		int x = (int) (Math.random() * 100) / 10;
-		int y = (int) new Date().getTime() % (30);
-		this.setPosition(new Position(x, 50 + y));
+    private void send() {
 
-	}
+        String grid[][] = Simulation.getInstance().getEnvironment().getGrid();
+        int height = Simulation.getInstance().getEnvironment().getGridHeight();
 
-	private void send() {
+        if (this.posX < 1550) {
+            for (int i = this.posX; i < this.posX + 50; i++) {
+                for (int j = 0; j < height; j++) {
+                    if (!grid[i][j].equals("-1")) {
+                        String nodeId = grid[i][j];
 
-		String grid[][] = Simulation.getInstance().getEnvironment().getGrid();
-		int height = Simulation.getInstance().getEnvironment().getGridHeight();
+                        Node recipient = Simulation.getInstance().getNodes().get(nodeId);
+                        recipient.receive(this.data);
+                    }
+                }
+            }
+        }
+    }
 
-		if (this.posX < 1550) {
-			for (int i = this.posX; i < this.posX + 50; i++) {
-				for (int j = 0; j < height; j++) {
-					if (!grid[i][j].equals("-1")) {
-						String nodeId = grid[i][j];
+    public void collect() {
+        long timeStamp = new Date().getTime();
+        int currentPosition = this.posX;
 
-						Node recipient = Simulation.getInstance().getNodes().get(nodeId);
-						recipient.receive(this.data);
-					}
-				}
-			}
-		}
-	}
+        data += this.getId().toString() + ", " + timeStamp + "," + currentPosition + ";";
 
-	public void collect() {
-		long timeStamp = new Date().getTime();
-		int currentPosition = this.posX;
+    }
 
-		data += this.getId().toString() + ", " + timeStamp + "," + currentPosition + ";";
+    public void move() {
+        this.posX += (int) (Math.random() * 20) + 30;
 
-	}
+        Simulation.getInstance().getEnvironment().contendGridPosition(this.posX, this.getPosition().getY(),
+                this.getId().toString());
 
-	public void move() {
-		this.posX += (int) (Math.random() * 20) + 30;
+    }
 
-		Simulation.getInstance().getEnvironment().contendGridPosition(this.posX, this.getPosition().getY(),
-				this.getId().toString());
+    public void setData(String data) {
+        this.data = data;
+    }
 
-	}
+    @Override
+    public void run() {
 
-	public void setData(String data) {
-		this.data = data;
-	}
+        while (this.posX < 1600) {
+            //this.move();
+            this.collect();
+            this.send();
 
-	@Override
-	public void run() {
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
-		while (this.posX < 1600) {
-			this.move();
-			this.collect();
-			this.send();
-
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-
-		try {
-			this.finalize();
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
-	}
+        try {
+            this.finalize();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
 
 }
