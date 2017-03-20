@@ -4,23 +4,24 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JFrame;
 import br.ufal.ic.mwsn.gui.Environment;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Simulation {
 
-    private long duration;
-    private long numberOfNodes;
     private Environment environment;
-    private static Map<String, Node> nodes;
+    private List<Sensor> sensors;
     private Sink sink;
 
     private Map<String, Position> map_temp;
 
     private static Simulation instance;
 
-    public int hour;
-
     public Simulation() {
-        nodes = new HashMap<>();
+        sensors = new ArrayList<>();
         map_temp = new HashMap<>();
         map_temp.put("A", new Position(100, 100));
         map_temp.put("B", new Position(100, 350));
@@ -37,6 +38,14 @@ public class Simulation {
         return instance;
     }
 
+    public double avg(List<Long> list) {
+        double avg = 0;
+        for (Long long1 : list) {
+            avg += long1.doubleValue() / list.size();
+        }
+        return avg;
+    }
+
     private void start() {
         initGraphics();
         initNetwork();
@@ -46,6 +55,13 @@ public class Simulation {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        System.out.println(sink.delays.size());
+        System.out.println(sink.delays);
+        System.out.println("DELAY AVG: " + avg(sink.delays) + "\n");
+        for (Sensor s : sensors) {
+            System.out.println("BATTERY: " + s.getId() + " " + s.getBattery());
+        }
+        System.out.println("BATTERY: " + sink.getId() + " " + sink.getBattery());
         System.exit(0);
 
     }
@@ -54,11 +70,9 @@ public class Simulation {
 
         // place sink
         sink = new Sink("Sink", 500, 100, 24f);
-        nodes.put(sink.getId(), sink);
         System.out.println("Sink " + sink.getId() + " added on " + sink.getPosition().toString());
 
         new Thread(sink).start();
-        int hour_start = 0;
 
         // place sensors
         for (Map.Entry<String, Position> entry : map_temp.entrySet()) {
@@ -84,40 +98,26 @@ public class Simulation {
 
             Sensor s = new Sensor(k, pos.getX(), pos.getY(), sink, rate);
             System.out.println("Sensor " + s.getId() + " added on " + pos.toString());
+            sensors.add(s);
+        }
+        int time = 0;
 
-            s.setTimeStart(hour_start);
-            hour_start = hour_start + 1;
+        while (time < 24) {
 
-            nodes.put(s.getId(), s);
-            new Thread(s).start();
-
+            long date_send = System.currentTimeMillis();
+            Collections.shuffle(sensors);
+            for (Sensor s : sensors) {
+                s.setTime(time);
+                s.setTimeStart(date_send);
+                new Thread(s).start();
+            }
             try {
-                int r = (int) (Math.random() * 1000);
-                Thread.sleep(1000 + r);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                Thread.sleep(1000);
+                ++time;
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Sensor.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-    }
-
-    public long getDuration() {
-        return duration;
-    }
-
-    public void setDuration(long duration) {
-        this.duration = duration;
-    }
-
-    public long getNumberOfNodes() {
-        return numberOfNodes;
-    }
-
-    public void setNumberOfNodes(long numberOfNodes) {
-        this.numberOfNodes = numberOfNodes;
-    }
-
-    public Environment getEnvironment() {
-        return environment;
     }
 
     private void initGraphics() {

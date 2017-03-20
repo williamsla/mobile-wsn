@@ -8,7 +8,7 @@ public abstract class Node implements Runnable {
     private Date currentTime;
     private Position position;
     private String data = "";
-    private int battery;
+    private float battery;
 
     public Node(String id, int x, int y) {
         this.id = id;
@@ -37,18 +37,19 @@ public abstract class Node implements Runnable {
         return data;
     }
 
-    public void receive(String dataFrame) {
+    public long receive(String dataFrame) {
         synchronized (dataFrame) {
             data += dataFrame;
         }
         System.out.println(dataFrame);
+        return System.currentTimeMillis();
     }
 
-    public int getBattery() {
+    public float getBattery() {
         return battery;
     }
 
-    public void decrementBattery(int value) {
+    public void decrementBattery(float value) {
         battery -= value;
     }
 }

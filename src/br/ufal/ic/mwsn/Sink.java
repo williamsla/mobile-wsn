@@ -1,12 +1,17 @@
 package br.ufal.ic.mwsn;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Sink extends Node {
 
     private float temp;
+    public List<Long> delays;
 
     public Sink(String id, int x, int y, float temp) {
         super(id, x, y);
         this.temp = temp;
+        delays = new ArrayList<>();
     }
 
     public float getTemperature() {
@@ -20,6 +25,14 @@ public class Sink extends Node {
         for (int i = 0; i < dataArray.length; i++) {
             System.out.println(i + ":" + dataArray[i].toString());
         }
+    }
+
+    public long receive(String dataFrame, long date_send) {
+        long date_receive = this.receive(dataFrame);
+
+        delays.add(date_receive - date_send);
+        this.decrementBattery(0.2f);
+        return date_receive;
     }
 
     private String[] formatData() {
@@ -36,7 +49,7 @@ public class Sink extends Node {
 
             if (!this.getData().equals("")) {
                 System.out.println("Sink is receiving data...");
-        //        System.out.println(this.getData() + "\n--");
+                //        System.out.println(this.getData() + "\n--");
             }
             try {
                 Thread.sleep(1000);
@@ -44,6 +57,5 @@ public class Sink extends Node {
                 e.printStackTrace();
             }
         }
-        
     }
 }
