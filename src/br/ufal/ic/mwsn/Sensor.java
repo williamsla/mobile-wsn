@@ -1,9 +1,21 @@
 package br.ufal.ic.mwsn;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,25 +84,49 @@ public class Sensor extends Node {
     }
 
     public String collect(int hour) {
-        return this.getId() + " | " + hour + " | " + getTemperature(hour) + ";\n";
+        return this.getId() + ";" + hour + " | " + getTemperature(hour) + "\n";
     }
 
     @Override
     public void run() {
-        try {
-            Socket sensor = new Socket("127.0.0.1", 1000);
-            ObjectOutputStream output = new ObjectOutputStream(sensor.getOutputStream());
-            String data = this.collect(getTime());
-            output.writeChars(data);
-            output.close();
-            sensor.close();
+        boolean close = false;
+        int tries = 0;
+        long time_begin = new Date().getTime();
+        while (close == false) {
+            ++tries;
+            if (tries == 5) {
+                System.out.println("package was lost");
+                break;
+            }
             try {
-                this.finalize();
-            } catch (Throwable ex) {
+                Socket sensor = new Socket("0.0.0.0", 2000);
+
+                String data = this.collect(getTime());
+                //send data to sink
+                PrintWriter out
+                        = new PrintWriter(sensor.getOutputStream(), true);
+                out.println(data);
+
+                //receives data from sink
+                BufferedReader input
+                        = new BufferedReader(new InputStreamReader(sensor.getInputStream()));
+                String date_received = input.readLine();
+
+                // counting delay time
+                long delay = Long.parseLong(date_received) - time_begin;
+                System.out.println("DELAY: " + getId() + " " + delay);
+
+                //closing
+                close = true;
+                out.close();
+                input.close();
+                sensor.close();
+            } catch (java.net.SocketException ex) {
+                ex.printStackTrace();
+                close = true;
+            } catch (IOException ex) {
                 Logger.getLogger(Sensor.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (IOException ex) {
-            Logger.getLogger(Sensor.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

@@ -103,7 +103,6 @@ public class Simulation {
         int time = 0;
 
         while (time < 24) {
-
             long date_send = System.currentTimeMillis();
             Collections.shuffle(sensors);
             for (Sensor s : sensors) {
@@ -114,6 +113,7 @@ public class Simulation {
             try {
                 Thread.sleep(1000);
                 ++time;
+                System.out.println("\n");
             } catch (InterruptedException ex) {
                 Logger.getLogger(Sensor.class.getName()).log(Level.SEVERE, null, ex);
             }

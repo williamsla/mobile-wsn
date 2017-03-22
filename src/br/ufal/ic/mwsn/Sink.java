@@ -1,12 +1,13 @@
 package br.ufal.ic.mwsn;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,22 +38,29 @@ public class Sink extends Node {
 
     @Override
     public void run() {
-        while (true) {
+        try {
+            server = new ServerSocket(2000);
 
-            try {
-                server = new ServerSocket(1000);
-                
+            while (true) {
+                System.out.println("listening on " + server.getInetAddress().getHostAddress() + " ...");
                 Socket client = server.accept();
-//                ObjectInputStream inputStream = new ObjectInputStream(client.getInputStream());
-//                System.out.println("Sink is receiving data.");
-                OutputStream outputStream = new ObjectOutputStream(client.getOutputStream());
-                outputStream.flush();
-                outputStream.write("received".getBytes());
-                outputStream.close();
-                client.close();
-            } catch (IOException ex) {
-                Logger.getLogger(Sink.class.getName()).log(Level.SEVERE, null, ex);
+
+                BufferedReader input
+                        = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                String[] data = input.readLine().split(";");
+                System.out.println("Sink received '" + data[1] + "' from '" + data[0] + "' data.");
+                try {
+                    PrintWriter out
+                            = new PrintWriter(client.getOutputStream(), true);
+                    out.println(new Date().getTime());
+                } finally {
+                    client.close();
+                }
             }
+
+        } catch (IOException ex) {
+            Logger.getLogger(Sink.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
 }
