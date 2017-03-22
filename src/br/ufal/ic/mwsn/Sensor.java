@@ -1,5 +1,8 @@
 package br.ufal.ic.mwsn;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,8 +12,6 @@ import java.util.logging.Logger;
 
 public class Sensor extends Node {
 
-    private String data;
-    //private int posX = 0;
     private final Sink sink_node;
 
     private Map<Integer, Float> temperatures;
@@ -64,51 +65,31 @@ public class Sensor extends Node {
         return this.date_send;
     }
 
-    private void send() {
+    private void send(String data) {
         this.decrementBattery(0.2f);
         long time_send = getTimeStart();
-        long time_receive = sink_node.receive(this.data, time_send);
+        long time_receive = sink_node.receive(data, time_send);
     }
 
-    public void collect(int hour) {
-        data = this.getId() + " | " + hour + " | " + getTemperature(hour) + ";\n";
+    public String collect(int hour) {
+        return this.getId() + " | " + hour + " | " + getTemperature(hour) + ";\n";
     }
 
-//    @Override
-//    public void run() {
-//        long sleep_time = 1000;
-//        while (time < 24) {
-//            this.collect(time);
-//            Date date_send = new Date();
-//            Date date_received = this.send();
-//            long atraso = date_received.getTime() - date_send.getTime();            
-//            System.out.println("ATRASO: " + atraso);
-//            sleep_time -= atraso;
-//            try {
-//                Thread.sleep(sleep_time);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//            ++time;
-//        }
-//
-//        try {
-//            this.finalize();
-//        } catch (Throwable e) {
-//            e.printStackTrace();
-//        }
-//
-//        System.out.println("BATTERY: " + this.getBattery());
-//    }
     @Override
     public void run() {
-
-        this.collect(getTime());
-
-        this.send();
         try {
-            this.finalize();
-        } catch (Throwable ex) {
+            Socket sensor = new Socket("127.0.0.1", 1000);
+            ObjectOutputStream output = new ObjectOutputStream(sensor.getOutputStream());
+            String data = this.collect(getTime());
+            output.writeChars(data);
+            output.close();
+            sensor.close();
+            try {
+                this.finalize();
+            } catch (Throwable ex) {
+                Logger.getLogger(Sensor.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } catch (IOException ex) {
             Logger.getLogger(Sensor.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
