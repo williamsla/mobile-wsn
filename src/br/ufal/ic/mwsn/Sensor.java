@@ -1,19 +1,10 @@
 package br.ufal.ic.mwsn;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,6 +22,7 @@ public class Sensor extends Node {
     float rate;
     private long date_send;
     private List<Long> battery;
+    public List<Long> delays;
 
     public Sensor(String id, int x, int y, Sink sink_node, float rate) {
         super(id, x, y);
@@ -39,6 +31,7 @@ public class Sensor extends Node {
         temperatures = new HashMap<>();
         setTemperature();
         battery = new ArrayList<>();
+        delays = new ArrayList<>();
     }
 
     public float getTemperature(int hour) {
@@ -77,12 +70,6 @@ public class Sensor extends Node {
         return this.date_send;
     }
 
-    private void send(String data) {
-        this.decrementBattery(0.2f);
-        long time_send = getTimeStart();
-        long time_receive = sink_node.receive(data, time_send);
-    }
-
     public String collect(int hour) {
         return this.getId() + ";" + hour + " | " + getTemperature(hour) + "\n";
     }
@@ -102,24 +89,16 @@ public class Sensor extends Node {
                 Socket sensor = new Socket("0.0.0.0", 2000);
 
                 String data = this.collect(getTime());
-                //send data to sink
-                PrintWriter out
-                        = new PrintWriter(sensor.getOutputStream(), true);
-                out.println(data);
+                //send data to sink                
+                send(sensor.getOutputStream(), data);
 
-                //receives data from sink
-                BufferedReader input
-                        = new BufferedReader(new InputStreamReader(sensor.getInputStream()));
-                String date_received = input.readLine();
-
+                //receives data from sink                
+                String date_received = receive(sensor.getInputStream());
                 // counting delay time
                 long delay = Long.parseLong(date_received) - time_begin;
-                System.out.println("DELAY: " + getId() + " " + delay);
-
+                delays.add(delay);                
                 //closing
                 close = true;
-                out.close();
-                input.close();
                 sensor.close();
             } catch (java.net.SocketException ex) {
                 ex.printStackTrace();
