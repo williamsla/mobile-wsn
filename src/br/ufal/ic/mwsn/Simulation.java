@@ -31,9 +31,9 @@ public class Simulation {
         return avg;
     }
 
-    public double avg_double(List<Double> list) {
-        double avg = 0;
-        for (Double number : list) {
+    public float avg_double(List<Float> list) {
+        float avg = 0;
+        for (Float number : list) {
             avg += number / list.size();
         }
         return avg;
@@ -42,17 +42,20 @@ public class Simulation {
     private void start() {
         initGraphics();
         initNetwork();
+        System.out.println("--------------------------------------------------------------------------");
 
         List<Long> delays = new ArrayList<>();
-        List<Double> battery = new ArrayList<>();
+        List<Float> battery = new ArrayList<>();
         for (Sensor s : sensors) {
             delays.addAll(s.delays);
-            battery.add(s.getBattery());
+            battery.addAll(s.getBatteries());
             System.out.println("BATTERY: " + s.getId() + " " + s.getBattery());
         }
-
+        System.out.println("BATTERY: " + battery);
         System.out.println("BATTERY AVG: " + avg_double(battery));
         System.out.println("BATTERY: " + sink.getId() + " " + sink.getBattery());
+
+        System.out.println("\n");
         System.out.println("\n");
         System.out.println("DELAYS: " + delays);
         System.out.println("DELAY AVG: " + avg_long(delays));
@@ -139,8 +142,8 @@ public class Simulation {
         map.put("B", new Position(100, 350));
         map.put("C", new Position(350, 100));
         map.put("D", new Position(350, 350));
-        map.put("E", new Position(250, 100));
-        map.put("F", new Position(150, 200));
+//        map.put("E", new Position(250, 100));
+//        map.put("F", new Position(150, 200));
 
         Simulation simulation = new Simulation(map);
         simulation.start();

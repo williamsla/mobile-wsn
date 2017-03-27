@@ -1,7 +1,6 @@
 package br.ufal.ic.mwsn;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Date;
@@ -10,7 +9,7 @@ import java.util.logging.Logger;
 
 public class Sink extends Node {
 
-    private float temp;
+    private final float temp;
     private ServerSocket server;
 
     public Sink(String id, int x, int y, float temp) {
@@ -30,11 +29,16 @@ public class Sink extends Node {
             while (true) {
                 System.out.println("listening on " + server.getInetAddress().getHostAddress() + " ...");
                 Socket client = server.accept();
+                long init_time = new Date().getTime();
                 try {
                     String data_receive = receive(client.getInputStream());
                     String[] data = data_receive.split(";");
                     System.out.println("Sink received '" + data[1] + "' from '" + data[0] + "' data.");
-                    send(client.getOutputStream(), new Date().getTime());
+                    long final_time = new Date().getTime();
+                    send(client.getOutputStream(), final_time);
+
+                    long delay = new Date().getTime() - init_time;
+                    decrementBattery(delay * 0.2f);
                 } finally {
                     client.close();
                 }

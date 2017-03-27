@@ -1,9 +1,6 @@
 package br.ufal.ic.mwsn;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Date;
@@ -95,8 +92,10 @@ public class Sensor extends Node {
                 //receives data from sink                
                 String date_received = receive(sensor.getInputStream());
                 // counting delay time
-                long delay = Long.parseLong(date_received) - time_begin;
-                delays.add(delay);                
+//                long delay = Long.parseLong(date_received) - time_begin;
+                long delay = new Date().getTime() - time_begin;
+                delays.add(delay);
+                decrementBattery(delay * 0.1f);
                 //closing
                 close = true;
                 sensor.close();
